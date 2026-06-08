@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<div style="position: fixed; top: 0; left: 0; font-size: 10px; padding: 5px; color: #ffffff; font-weight: bold; text-align: left; z-index: 1000;">
-    <div>قسم الفنون البصرية</div>
+<div style="position: fixed; top: 0; left: 0; font-size: 10px; padding: 5px; color: #ffffff; font-weight: bold; text-align: left;">
+    <div>قسم التعليم الإلكتروني</div>
     <div>مع تحيات قسم التعليم الإلكتروني</div>
 </div>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معرض الصور - الكعبان</title>
+    <title>شهادات تكريم الطلاب بمنصة قطر للتعليم - تكبير حر خارج الحدود</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
@@ -38,7 +38,6 @@
             margin-bottom: 20px;
             font-weight: 300;
             color: #00d4ff;
-            padding: 0 15px;
         }
 
         #play-btn {
@@ -62,14 +61,17 @@
             width: 100%;
             padding-top: 50px;
             padding-bottom: 80px;
+            /* السماح للصور بالخروج من حدود السلايدر العلوي والسفلي */
             overflow: visible !important; 
         }
 
         .swiper-slide {
-            width: 320px; 
-            height: 450px; 
+            /* تعديل الأبعاد هنا لتصبح بالعرض */
+            width: 450px; 
+            height: 350px; 
             background: #1a1a1a;
             border-radius: 20px;
+            /* إزالة overflow hidden للسماح للصورة بالخروج */
             overflow: visible !important; 
             display: flex;
             flex-direction: column;
@@ -78,10 +80,12 @@
             transition: z-index 0.3s;
         }
 
+        /* حاوية الزووم */
         .swiper-zoom-container {
             width: 100%;
             height: 75%;
             position: relative;
+            /* التأكد من أن الزووم يمكنه التمدد خارج الحاوية */
             overflow: visible !important; 
         }
 
@@ -91,10 +95,16 @@
             object-fit: cover;
             border-radius: 20px 20px 0 0;
             border-bottom: 2px solid #00d4ff;
+            transition: transform 0.3s ease;
+        }
+
+        /* عند التكبير، نجعل السلايدر فوق الجميع */
+        .swiper-slide-zoomed {
+            z-index: 1000 !important;
         }
 
         .text-content {
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             background: #1a1a1a;
             border-radius: 0 0 20px 20px;
@@ -103,14 +113,14 @@
         }
 
         .text-content h3 { margin: 0; font-size: 1.2rem; color: #fff; }
-        .text-content p { margin: 5px 0 0; font-size: 1rem; color: #00d4ff; font-weight: bold; }
+        .text-content p { margin: 5px 0 0; font-size: 0.9rem; color: #aaa; }
         .swiper-pagination-bullet { background: #00d4ff; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>معرض الصور - الكعبان ب.ع.ث للبنين 2025-2026</h1>
+    <h1>معرض الصور -شهادات تكريم الطلاب بمنصة قطر للتعليم  2025-2026</h1>
     <button id="play-btn" onclick="resumeAutoplay()">استمرار العرض التلقائي</button>
     
     <div class="swiper mySwiper">
@@ -125,91 +135,57 @@
     const wrapper = document.getElementById('gallery-wrapper');
     const playBtn = document.getElementById('play-btn');
 
-    // وظيفة لقراءة ملف CSV وتوليد المعرض
-    async function loadGallery() {
-        try {
-            const response = await fetch('data.csv');
-            const data = await response.text();
-            
-            // تحويل النص إلى أسطر ثم مصفوفة بيانات
-            const rows = data.split('\n').slice(1); // تجاهل سطر العنوان الأول
-            const nameMap = {};
+    for (let i = 1; i <= 100; i++) {
+        wrapper.innerHTML += `
+            <div class="swiper-slide">
+                <div class="swiper-zoom-container">
+                    <img src="images/${i}.JPEG" alt="صورة رقم ${i}" onerror="this.src='https://via.placeholder.com/450x350?text=Image+Not+Found'">
+                </div>
+                <div class="text-content">
+                    <h3>الصورة رقم ${i}</h3>
+                    <p>وصف توضيحي للمحتوى رقم ${i}</p>
+                </div>
+            </div>`;
+    }
 
-            rows.forEach(row => {
-                const columns = row.split(',');
-                if (columns.length >= 2) {
-                    const id = columns[0].trim();
-                    const name = columns[1].trim();
-                    nameMap[id] = name;
+    var swiper = new Swiper(".mySwiper", {
+        effect: "coverflow", 
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: "auto",
+        loop: true,
+        zoom: {
+            maxRatio: 2.5, // التكبير لمرتين ونصف
+            minRatio: 1,
+            toggle: true, 
+        },
+        // استخدام عجلة الماوس للتحكم بالسلايدر
+        mousewheel: true, 
+        coverflowEffect: {
+            rotate: 35, stretch: 0, depth: 250, modifier: 1, slideShadows: false, 
+        },
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: true, 
+        },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        on: {
+            autoplayStop: function () { playBtn.classList.add('show'); },
+            autoplayStart: function () { playBtn.classList.remove('show'); },
+            // منع تداخل السحب مع الزووم
+            zoomChange: function(s, scale, imageEl) {
+                if (scale > 1) {
+                    this.autoplay.stop();
+                    // إضافة كلاس لرفع z-index عند التكبير
+                    if(this.clickedSlide) this.clickedSlide.style.zIndex = "1000";
+                } else {
+                    if(this.clickedSlide) this.clickedSlide.style.zIndex = "1";
                 }
-            });
-
-            // توليد الـ 100 صورة
-            for (let i = 1; i <= 100; i++) {
-                const studentName = nameMap[i] || "اسم الطالب غير مسجل";
-                wrapper.innerHTML += `
-                    <div class="swiper-slide">
-                        <div class="swiper-zoom-container">
-                            <img src="images/${i}.JPEG" alt="صورة رقم ${i}" onerror="this.src='https://via.placeholder.com/320x450?text=Image+Not+Found'">
-                        </div>
-                        <div class="text-content">
-                            <h3>عمل الطالب رقم ${i}</h3>
-                            <p>${studentName}</p>
-                        </div>
-                    </div>`;
             }
+        },
+    });
 
-            // تشغيل السلايدر بعد تحميل البيانات
-            initSwiper();
-
-        } catch (error) {
-            console.error("خطأ في تحميل ملف CSV:", error);
-            // في حال فشل تحميل الملف، يتم العرض الافتراضي
-            alert("تنبيه: لم يتم العثور على ملف data.csv أو تنسيقه غير صحيح.");
-        }
-    }
-
-    let swiper;
-    function initSwiper() {
-        swiper = new Swiper(".mySwiper", {
-            effect: "coverflow", 
-            grabCursor: true,
-            centeredSlides: true,
-            slidesPerView: "auto",
-            loop: true,
-            zoom: {
-                maxRatio: 2.5,
-                minRatio: 1,
-                toggle: true, 
-            },
-            mousewheel: true, 
-            coverflowEffect: {
-                rotate: 35, stretch: 0, depth: 250, modifier: 1, slideShadows: false, 
-            },
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: true, 
-            },
-            pagination: { el: ".swiper-pagination", clickable: true },
-            on: {
-                autoplayStop: function () { playBtn.classList.add('show'); },
-                autoplayStart: function () { playBtn.classList.remove('show'); },
-                zoomChange: function(s, scale, imageEl) {
-                    if (scale > 1) {
-                        this.autoplay.stop();
-                        if(this.clickedSlide) this.clickedSlide.style.zIndex = "1000";
-                    } else {
-                        if(this.clickedSlide) this.clickedSlide.style.zIndex = "1";
-                    }
-                }
-            },
-        });
-    }
-
-    function resumeAutoplay() { if(swiper) swiper.autoplay.start(); }
-
-    // بدء العملية
-    loadGallery();
+    function resumeAutoplay() { swiper.autoplay.start(); }
 </script>
 
 </body>
